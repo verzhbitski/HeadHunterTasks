@@ -9,6 +9,7 @@ def P(n, k):
 
     return P(n - 1, k - 1) + P(n - k, k)
 
-n = 4
-k = 4
+n = int(raw_input())
+k = int(raw_input())
+
 print(P(n, k))
