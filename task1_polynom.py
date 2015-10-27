@@ -3,10 +3,9 @@ import re
 
 __author__ = 'Verzhbitski Vladislav'
 
-var = 'x'
 
-src = raw_input()
-var = re.search('[a-z]', src)
+expression = raw_input()
+var = re.search('[a-z]', expression)
 var = var.group(0)
 
 
@@ -100,13 +99,12 @@ def res_polynomial(first, second):
 
 def multiply_polynomial(first, second):
     result = Polynomial()
-    tmp_var = 'x'
 
     for i in first.polynomial:
         for j in second.polynomial:
             tmp_coef = i.coef * j.coef
             tmp_degree = i.degree + j.degree
-            tmp = Member(tmp_coef, tmp_var, tmp_degree)
+            tmp = Member(tmp_coef, var, tmp_degree)
             result.add_member(tmp)
 
     return result
@@ -127,17 +125,8 @@ def read_sign(x):
 
 
 def parse_polynomial(src):
-    # src = re.sub('([\+\-])\s+', '\g<1>', src)
-    # print(src)
     result = Polynomial()
-    # member_list = re.split('\s+', src)
-    # for i in member_list:
     tmp = re.findall('(?:([\d]*)(?:([a-z])(?:(?:(?:\^))([\d]+))?)|([\d]+))', src)
-
-    # if tmp[0][0] == '-':
-    #     tmp_sign = -1
-    # else:
-    #     tmp_sign = 1
 
     if tmp[0][3] != '':
         tmp_degree = 0
@@ -165,7 +154,7 @@ def normalize(src):
     return src
 
 
-class Tree:
+class Exp:
 
     def __init__(self):
         self.left = 0
@@ -214,23 +203,26 @@ def is_member(src):
 
 
 def parse(src):
-    result = Tree()
+    result = Exp()
     first_operation = False
     mul_position = 0
     src = clear(src)
-    # print(src)
     i = 0
     if not is_member(src):
         while i < len(src):
             if src[i] == '(':
                 i = search_close_bracket(src, i + 1)
             elif src[i] in ('+', '-'):
-                result.left = parse(src[:i])
-                # print(src[:i])
-                result.right = parse(src[i + 1:])
-                # print(src[i + 1:])
-                result.value = src[i]
-                first_operation = True
+                if src[i] == '-' and i == 0:
+                    result.left = parse('0')
+                    result.right = parse(src[i + 1:])
+                    result.value = src[i]
+                    first_operation = True
+                else:
+                    result.left = parse(src[:i])
+                    result.right = parse(src[i + 1:])
+                    result.value = src[i]
+                    first_operation = True
             elif src[i] == '*':
                 mul_position = i
 
@@ -238,44 +230,31 @@ def parse(src):
 
         if not first_operation:
             result.left = parse(src[0: mul_position])
-            # print(src[0: mul_position])
             result.right = parse(src[mul_position + 1:])
-            # print(src[mul_position + 1:])
             result.value = '*'
     else:
-        # print(src)
         result.value = src
 
     return result
 
 
-def compute(tree):
-    if tree.left == 0 and tree.right == 0:
-        tree = parse_polynomial(tree.value)
-        # tree.print_polynomial()
-        # print()
-        return tree
+def compute(exp):
+    if exp.left == 0 and exp.right == 0:
+        exp = parse_polynomial(exp.value)
+        return exp
 
-    if tree.value == '*':
-        tree = multiply_polynomial(compute(tree.left), compute(tree.right))
-        # tree.print_polynomial()
-        # print()
-        return tree
-    elif tree.value == '+':
-        tree = sum_polynomial(compute(tree.left), compute(tree.right))
-        # tree.print_polynomial()
-        # print()
-        return tree
-    elif tree.value == '-':
-        tree = res_polynomial(compute(tree.left), compute(tree.right))
-        # tree.print_polynomial()
-        # print()
-        return tree
+    if exp.value == '*':
+        exp = multiply_polynomial(compute(exp.left), compute(exp.right))
+        return exp
+    elif exp.value == '+':
+        exp = sum_polynomial(compute(exp.left), compute(exp.right))
+        return exp
+    elif exp.value == '-':
+        exp = res_polynomial(compute(exp.left), compute(exp.right))
+        return exp
 
 
-src = normalize(src)
-test = parse(src)
-# test.write()
-test = compute(test)
-test.print_polynomial()
-# print(test.left.value)
+expression = normalize(expression)
+expression = parse(expression)
+expression = compute(expression)
+expression.print_polynomial()
