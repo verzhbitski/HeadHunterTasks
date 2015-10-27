@@ -1,7 +1,13 @@
 from __future__ import print_function
 import re
+import sys
 
 __author__ = 'Verzhbitski Vladislav'
+
+
+if len(sys.argv) == 3:
+    sys.stdin = open(sys.argv[1], 'r')
+    sys.stdout = open(sys.argv[2], 'w')
 
 
 expression = raw_input()
