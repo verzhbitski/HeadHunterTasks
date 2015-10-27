@@ -1,15 +1,15 @@
 __author__ = 'Verzhbitski Vladislav'
 
 
-def P(n, k):
-    if n == k or k == 1:
+def partition_number(x, y):
+    if x == y or y == 1:
         return 1
-    if k > n:
+    if y > x:
         return 0
 
-    return P(n - 1, k - 1) + P(n - k, k)
+    return partition_number(x - 1, y - 1) + partition_number(x - y, y)
 
-n = int(raw_input())
-k = int(raw_input())
+n = int(input())
+k = int(input())
 
-print(P(n, k))
+print(partition_number(n, k))
