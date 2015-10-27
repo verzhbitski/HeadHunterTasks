@@ -110,20 +110,6 @@ def multiply_polynomial(first, second):
     return result
 
 
-def is_degree(x):
-    if x == '^':
-        return 1
-    else:
-        return 0
-
-
-def read_sign(x):
-    if x == '-':
-        return -1
-    else:
-        return 1
-
-
 def parse_polynomial(src):
     result = Polynomial()
     tmp = re.findall('(?:([\d]*)(?:([a-z])(?:(?:(?:\^))([\d]+))?)|([\d]+))', src)
